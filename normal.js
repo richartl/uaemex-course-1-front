@@ -11,7 +11,7 @@ let model = {
     getAllTasksFromAPI: function() {
         const _this = model;
         $.ajax({
-            url: "http://localhost:4003/api/v1/tasks",
+            url: "https://uaemex-backend-5fkres34za-uc.a.run.app/api/v1/tasks",
             method: 'GET'
         })
             .done(function(data) {
@@ -22,9 +22,9 @@ let model = {
     addTask: function(text) {
         const _this = model;
         $.ajax({
-            url: "http://localhost:4003/api/v1/tasks",
+            url: "https://uaemex-backend-5fkres34za-uc.a.run.app/api/v1/tasks",
             method: 'POST',
-            data: "{\"description\":\"" + text + "\"}"
+            data: "{\"description\":\"" + text + "\"}",
         })
             .done(function(data) {
                 _this.getAllTasksFromAPI()
@@ -62,7 +62,6 @@ let view = {
         const _this = view;
         this.todoListContainer.innerHTML = '';
         $.each(allTasks, function(index, task) {
-            console.log(task)
             _this.renderTask(task);
         });
     },
