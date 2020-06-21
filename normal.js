@@ -1,49 +1,34 @@
-let todoItems = [];
-let _this = this;
-
 let model = {
     init: function() {
         this.todoItems = [
-/*            {'id': 0,*/
-                //'text': 'make homework',
-                //'checked': 'false',
-            //},
-            //{'id': 1,
-                //'text': 'study C++',
-                //'checked': 'false',
-            //},
-            //{'id': 2,
-                //'text': 'study java',
-                //'checked': 'false',
-            //},
-            //{'id': 3,
-                //'text': 'study design patterns',
-                //'checked': 'false',
-            /*}*/
         ];
+        this.getAllTasksFromAPI()
     },
     getTasks: function() {
         const _this = model;
         return _this.todoItems;
     },
-    getAllTasksFromAPI: function(callback) {
+    getAllTasksFromAPI: function() {
+        const _this = model;
         $.ajax({
-            url: "http://localhost:8080/api/v1/resources/books/all",
+            url: "http://localhost:4003/api/v1/tasks",
             method: 'GET'
         })
-            .done(function( data ) {
-                callback(data);
+            .done(function(data) {
+                _this.todoItems = data;
+                view.renderAllTasks(_this.todoItems);
             });
     },
     addTask: function(text) {
         const _this = model;
-        let task = {
-            id: '_' + Math.random().toString(36).substr(2, 9),
-            text: text,
-            checked: false,
-        };
-        _this.todoItems.push(task);
-        view.renderAllTasks(_this.todoItems);
+        $.ajax({
+            url: "http://localhost:4003/api/v1/tasks",
+            method: 'POST',
+            data: "{\"description\":\"" + text + "\"}"
+        })
+            .done(function(data) {
+                _this.getAllTasksFromAPI()
+            });
     },
     deleteTodo: function(key) {
         this.todoItems = this.todoItems.filter(function(todo, index){
@@ -66,7 +51,7 @@ let view = {
             <li class="todo-item" data-key="${task.id}">
                 <input id="${task.id}" type="checkbox"/>
                 <label for="${task.id}" class="tick js-tick"></label>
-                <span>${task.text}</span>
+                <span>${task.description}</span>
                 <button class="delete-todo js-delete-todo">
                     <svg><use href="#delete-icon"></use></svg>
                 </button>
@@ -77,6 +62,7 @@ let view = {
         const _this = view;
         this.todoListContainer.innerHTML = '';
         $.each(allTasks, function(index, task) {
+            console.log(task)
             _this.renderTask(task);
         });
     },
